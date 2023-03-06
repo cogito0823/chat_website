@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+      integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
+        integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
+        crossorigin="anonymous"></script>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">Navbar</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
+            aria-controls="navbarText" aria-expanded="False" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            {% if user.is_authenticated %}
+
+                <li class="nav-item">
+                    <a class="nav-link" href="logout">Logout</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Welcome, {{ user.username }}</a>
+                </li>
+
+            {% else %}
+
+                <li class="nav-item">
+                    <a class="nav-link" href="accounts/login">Login</a>
+                </li>
+
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+
+<head>
+    <title>Chat</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {height: 100vh;
+            margin: 0 auto;
+            {#min-width: 800px;#}
+        }
+
+        .chat-window {
+            display: flex;
+            flex-direction: column;
+            line-height: 1;
+            background-color: gray;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            margin: 20px auto;
+            padding: 20px;
+            position: relative;
+            max-width: 600px;
+        }
+
+        .chat-window:before {
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid #fff;
+            border-top: 10px solid transparent;
+            content: '';
+            height: 0;
+            left: -10px;
+            position: absolute;
+            top: 20px;
+            width: 0;
+        }
+
+        .chat-window:after {
+            border-bottom: 10px solid transparent;
+            border-right: 10px solid rgba(0, 0, 0, 0.3);
+            border-top: 10px solid transparent;
+            content: '';
+            height: 0;
+            left: -11px;
+            position: absolute;
+            top: 20px;
+            width: 0;
+        }
+
+        .chat-message {
+            line-height: 1;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 10px;
+            max-width: 400px;
+        }
+
+        .chat-message.received {
+            background-color: #d6f1a1;
+            float: right;
+        }
+
+        .chat-message.sent {
+            background-color: #fff;
+            align-self: flex-start;
+        }
+
+        .chat-form {
+            display: flex;
+            margin-top: 20px;
+        }
+
+        .chat-form-container {
+            margin: 20px auto;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        p {
+            margin: auto;
+        }
+
+textarea:focus {
+  outline: none;
+  border-color: #1E90FF;
+}
+
+
+        p {
+  white-space: pre-wrap;
+}
+
+        .chat-form input[type="text"] {
+            border: none;
+            border-radius: 5px;
+            flex-grow: 1;
+            font-size: 16px;
+            margin-right: 10px;
+            padding: 10px;
+        }
+
+        .chat-form input[type="submit"] {
+            background-color: #4caf50;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="chat-window">
+        <div id="message-container"></div>
+    </div>
+    <div class="chat-form-container">
+        <form id="chat-form" class="chat-form">
+            <label for="chat-input"></label><input type="text" id="chat-input" placeholder="Type a message...">
+            <input type="submit" value="Send">
+        </form>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+
+        $('#chat-form').submit(function (event) {
+            event.preventDefault();
+            let prompt = $('#chat-input').val();
+            prompt = prompt.replace(/\n/g, '<br>');
+            $.ajax({
+                url: '',
+                method: 'POST',
+                data: {'prompt': prompt},
+                success: function (response) {
+                    var content = response.content;
+                    $('#message-container').append('<div class="chat-message sent"><p>' + prompt + '</p></div>');
+                    $('#message-container').append('<div class="chat-message received"><p>' + content + '</p></div>');
+                    $('#chat-input').val('');
+                }
+            });
+        });
+    });
+</script>
+</body>
+
+<!-- Example-->
+
+<!-- Form Module-->

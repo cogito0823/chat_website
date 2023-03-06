@@ -9,8 +9,10 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
 from pathlib import Path
+import crispy_forms
+import crispy_bootstrap4
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,7 +27,11 @@ SECRET_KEY = 'django-insecure-z%j!j^e@uo6y7iphbx5liq9co)@!%@q5nh5n18t86=wr009gdv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+CHAT_WEBSITE_SECURE_KEY = os.environ.get('CHAT_WEBSITE_SECURE_KEY')
 
 
 # Application definition
@@ -37,8 +43,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'chatgpt',
+    'crispy_forms',
+    'crispy_bootstrap4'
 ]
-
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -50,11 +60,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'chat_website.urls'
-
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
