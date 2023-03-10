@@ -31,7 +31,10 @@ def chat(request):
     if request.method == 'POST':
         chatbot = get_chatbot(request)
         prompt = request.POST.get('prompt')
-        response = chatbot.ask(request.POST.get('prompt'))
+        try:
+            response = chatbot.ask(request.POST.get('prompt'))
+        except Exception as e:
+            response = "There seems to be an error, you can try again. error message: " + str(e)
         request.session['chatbot_conversation'] = chatbot.conversation
         return JsonResponse({'content': response})
     elif request.method == 'DELETE':
