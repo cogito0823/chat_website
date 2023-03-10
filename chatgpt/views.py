@@ -20,17 +20,17 @@ def get_chatbot(request):
     return chatbot
 
 
+@login_required(login_url='accounts/login/')
 def clear_chatbot(request):
     if 'chatbot_conversation' in request.session:
         del request.session['chatbot_conversation']
 
 
-@login_required
+@login_required(login_url='accounts/login/')
 @csrf_exempt
 def chat(request):
     if request.method == 'POST':
         chatbot = get_chatbot(request)
-        prompt = request.POST.get('prompt')
         try:
             response = chatbot.ask(request.POST.get('prompt'))
         except Exception as e:
