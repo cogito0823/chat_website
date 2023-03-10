@@ -34,7 +34,7 @@ def chat(request):
         try:
             response = chatbot.ask(request.POST.get('prompt'))
         except Exception as e:
-            response = "There seems to be an error, you can try again. error message: " + str(e)
+            response = "There seems to be an error, you can try again. error message: \n" + str(e)
         request.session['chatbot_conversation'] = chatbot.conversation
         return JsonResponse({'content': response})
     elif request.method == 'DELETE':

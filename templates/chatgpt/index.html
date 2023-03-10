@@ -83,7 +83,6 @@
             padding: 10px;
             margin-right: 10px;
             border: 1px solid #ccc;
-            border-radius: 5px;
         }
 
         .chat-message {
@@ -115,6 +114,12 @@
             background-color: #dc3545;
         }
 
+        .form-control {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            height: auto;
+        }
+
         .btn-danger:hover {
             background-color: #c82333;
         }
@@ -144,52 +149,56 @@
 </div>
 <script>
     $(document).ready(function () {
-        // 添加一个scrollToBottom函数，用于滚动到底部
-        function scrollToBottom() {
-            $('.chat-window').scrollTop($('.chat-window')[0].scrollHeight);
-        }
+    // 添加一个scrollToBottom函数，用于滚动到底部
+    function scrollToBottom() {
+        $('.chat-window').scrollTop($('.chat-window')[0].scrollHeight);
+    }
 
-        $('#clear-chat-btn').click(function (event) {
+    $('#clear-chat-btn').click(function (event) {
+        event.preventDefault();
+        $.ajax({
+            url: '',
+            method: 'DELETE',
+            success: function (response) {
+                window.location.reload();
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $('#chat-form').submit(function (event) {
             event.preventDefault();
+            let prompt = $('#chat-input').val();
+            prompt = prompt.replace(/\n/g, '<br>');
+            $('#chat-input').attr('disabled', true);
+            $('#chat-form button[type="submit"]').attr('disabled', true);
+            $('#chat-form button[type="submit"]').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...');
+            $('#message-container').append('<div class="chat-message loading"><p><i class="fa fa-spinner fa-spin"></i></p></div>');
             $.ajax({
                 url: '',
-                method: 'DELETE',
+                method: 'POST',
+                data: {'prompt': prompt},
                 success: function (response) {
-                    window.location.reload();
+                    var content = response.content;
+                    $('#message-container .chat-message.loading').remove();
+                    $('#message-container').append('<div class="chat-message sent"><p>' + prompt + '</p></div>');
+                    scrollToBottom();
+                    $('#message-container').append('<div class="chat-message received"><p>' + content + '</p></div>');
+                    scrollToBottom();
+
+                    $('#chat-input').val('');
+                    $('#chat-input').attr('disabled', false);
+                    $('#chat-form button[type="submit"]').attr('disabled', false);
+                    $('#chat-form button[type="submit"]').html('Send');
+
+                    // 将焦点设置回 chat-input 输入框
+                    $('#chat-input').focus();
                 }
             });
         });
-
-        $(document).ready(function () {
-            $('#chat-form').submit(function (event) {
-                event.preventDefault();
-                let prompt = $('#chat-input').val();
-                prompt = prompt.replace(/\n/g, '<br>');
-                $('#chat-input').attr('disabled', true);
-                $('#chat-form button[type="submit"]').attr('disabled', true);
-                $('#chat-form button[type="submit"]').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...');
-                $('#message-container').append('<div class="chat-message loading"><p><i class="fa fa-spinner fa-spin"></i></p></div>');
-                $.ajax({
-                    url: '',
-                    method: 'POST',
-                    data: {'prompt': prompt},
-                    success: function (response) {
-                        var content = response.content;
-                        $('#message-container .chat-message.loading').remove();
-                        $('#message-container').append('<div class="chat-message sent"><p>' + prompt + '</p></div>');
-                        $('#message-container').append('<div class="chat-message received"><p>' + content + '</p></div>');
-
-                        // 在新消息添加后调用 scrollToBottom 函数
-                        scrollToBottom();
-                        $('#chat-input').val('');
-                        $('#chat-input').attr('disabled', false);
-                        $('#chat-form button[type="submit"]').attr('disabled', false);
-                        $('#chat-form button[type="submit"]').html('Send');
-                    }
-                });
-            });
-        });
     });
+});
+
 
 </script>
 </body>
