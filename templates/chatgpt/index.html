@@ -37,168 +37,121 @@
     <title>Chat</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body {
-            background-color: #f0f0f0;
-            font-family: Arial, sans-serif;
-        }
-
-        .container {height: 100vh;
-            margin: 0 auto;
-            {#min-width: 800px;#}
-        }
-
-        .chat-window {
-            line-height: 1;
-            background-color: #fff;
-            border-radius: 5px;
-            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-            margin: 20px auto;
-            padding: 20px;
-            position: relative;
-            max-width: 600px;
-        }
-
-        .chat-window:before {
-            border-bottom: 10px solid transparent;
-            border-right: 10px solid #fff;
-            border-top: 10px solid transparent;
-            content: '';
-            height: 0;
-            left: -10px;
-            position: absolute;
-            top: 20px;
-            width: 0;
-        }
-
-        .chat-window:after {
-            border-bottom: 10px solid transparent;
-            border-right: 10px solid rgba(0, 0, 0, 0.3);
-            border-top: 10px solid transparent;
-            content: '';
-            height: 0;
-            left: -11px;
-            position: absolute;
-            top: 20px;
-            width: 0;
-        }
-
-        .chat-message {
-            line-height: 1;
-            background-color: #f0f0f0;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            padding: 10px;
-        }
-
-        .chat-message.received {
-            background-color: #d6f1a1;
-            align-self: flex-end;
-        }
-
-        .chat-message.sent {
-            background-color: #fff;
-            align-self: flex-start;
-        }
-
-        .chat-form {
-            display: flex;
-            margin-top: 20px;
-        }
-
-        .chat-form-container {
-            margin: 20px auto;
-            max-width: 600px;
-            padding: 20px;
-        }
-
-        p {
-            margin: auto;
-        }
-
-textarea:focus {
-  outline: none;
-  border-color: #1E90FF;
+.container {
+  margin: 50px auto;
+  width: 80%;
+  max-width: 800px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #f6f6f6;
 }
 
-
-        p {
-  white-space: pre-wrap;
+.chat-window {
+  height: 400px;
+  overflow-y: scroll;
+  padding: 10px;
 }
 
-        .chat-form input[type="text"] {
-            border: none;
-            border-radius: 5px;
-            flex-grow: 1;
-            font-size: 16px;
-            margin-right: 10px;
-            padding: 10px;
-        }
+.chat-form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
 
-        .chat-form input[type="submit"] {
-            background-color: #4caf50;
-            border: none;
-            border-radius: 5px;
-            color: #fff;
-            cursor: pointer;
-            font-size: 16px;
-            padding: 10px 20px;
-        }
-    </style>
+#chat-input {
+  flex: 1;
+  padding: 10px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.chat-message {
+  padding: 5px 10px;
+  margin: 5px;
+  border-radius: 5px;
+}
+
+.sent {
+  background-color: #d5e7fc;
+}
+
+.received {
+  background-color: #fff;
+}
+
+.btn {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #c82333;
+}
+</style>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 </head>
 <body>
-<div class="container">
+  <div class="container">
     <div class="chat-window">
-        <div id="message-container"></div>
+      <div id="message-container"></div>
     </div>
     <div class="chat-form-container">
-        <form id="chat-form" class="chat-form">
-            <label for="chat-input"></label><input type="text" id="chat-input" placeholder="Type a message...">
-            <input type="submit" value="Send">
-        </form>
-    </div>
-
-<div class="text-center">
+      <form id="chat-form" class="chat-form">
+        <label for="chat-input"></label><input type="text" id="chat-input" placeholder="Type a message...">
+        <input type="submit" value="Send">
+      </form>
+    </div><div class="text-center">
   <button id="clear-chat-btn" class="btn btn-danger" style="min-width: 400px; line-height: 1.5">Clear chat</button>
 </div></div>
-
-
-<script>
-
+  <script>
     $(document).ready(function () {
-    $('#clear-chat-btn').click(function (event) {
+      $('#clear-chat-btn').click(function (event) {
         event.preventDefault();
         $.ajax({
-            url: '',
-            method: 'DELETE',
-            success: function (response) {
-                window.location.reload();
-            }
+          url: '',
+          method: 'DELETE',
+          success: function (response) {
+            window.location.reload();
+          }
         });
+      });
     });
-});
-
 
     $(document).ready(function () {
-
-        $('#chat-form').submit(function (event) {
-            event.preventDefault();
-            let prompt = $('#chat-input').val();
-            prompt = prompt.replace(/\n/g, '<br>');
-            $.ajax({
-                url: '',
-                method: 'POST',
-                data: {'prompt': prompt},
-                success: function (response) {
-                    var content = response.content;
-                    $('#message-container').append('<div class="chat-message sent"><p>' + prompt + '</p></div>');
-                    $('#message-container').append('<div class="chat-message received"><p>' + content + '</p></div>');
-                    $('#chat-input').val('');
-                }
-            });
+      $('#chat-form').submit(function (event) {
+        event.preventDefault();
+        let prompt = $('#chat-input').val();
+        prompt = prompt.replace(/\n/g, '<br>');
+        $.ajax({
+          url: '',
+          method: 'POST',
+          data: {'prompt': prompt},
+          success: function (response) {
+            var content = response.content;
+            $('#message-container').append('<div class="chat-message sent"><p>' + prompt + '</p></div>');
+            $('#message-container').append('<div class="chat-message received"><p>' + content + '</p></div>');
+            $('#chat-input').val('');
+          }
         });
+      });
     });
-</script>
+  </script>
 </body>
+
+
 
 <!-- Example-->
 
