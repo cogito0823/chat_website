@@ -20,13 +20,13 @@ def get_chatbot(request):
     return chatbot
 
 
-@login_required(login_url='accounts/login/')
+@login_required(login_url='/chat/accounts/login/')
 def clear_chatbot(request):
     if 'chatbot_conversation' in request.session:
         del request.session['chatbot_conversation']
 
 
-@login_required(login_url='accounts/login/')
+@login_required(login_url='/chat/accounts/login/')
 @csrf_exempt
 def chat(request):
     if request.method == 'POST':
