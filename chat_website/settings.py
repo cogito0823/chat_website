@@ -33,7 +33,8 @@ ALLOWED_HOSTS = ['*']
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 CHAT_WEBSITE_SECURE_KEY = os.environ.get('CHAT_WEBSITE_SECURE_KEY')
 
-
+CSRF_TRUSTED_ORIGINS = ['https://*.ccogito.xyz', 'https://*.127.0.0.1']
+LOGIN_REDIRECT_URL = '/chat/'
 # Application definition
 
 INSTALLED_APPS = [

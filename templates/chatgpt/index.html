@@ -203,7 +203,7 @@
                         $('#message-container .chat-message.loading').remove();
                         $('#message-container').append('<div class="chat-message sent"><p>' + prompt + '</p></div>');
                         scrollToBottom();
-                        $('#message-container').append('<div class="chat-message received"><p>' + content + '</p></div>');
+                        $('#message-container').append('<div class="chat-message received"><p>' + content.replace(/\n/g, '<br>') + '</p></div>');
                         scrollToBottom();
 
                         $('#chat-input').val('');
