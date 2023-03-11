@@ -30,12 +30,19 @@ def clear_chatbot(request):
 @csrf_exempt
 def chat(request):
     if request.method == 'POST':
-        chatbot = get_chatbot(request)
+        try:
+            chatbot = get_chatbot(request)
+        except Exception as e:
+            response = "There seems to be an error, you can try again. error message: \n" + str(e)
+            return JsonResponse({'content': response})
+
         try:
             response = chatbot.ask(request.POST.get('prompt'))
         except Exception as e:
             response = "There seems to be an error, you can try again. error message: \n" + str(e)
+
         request.session['chatbot_conversation'] = chatbot.conversation
+
         return JsonResponse({'content': response})
     elif request.method == 'DELETE':
         clear_chatbot(request)
