@@ -32,7 +32,7 @@
         </ul>
     </div>
 </nav>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <head>
     <title>Chat</title>
     <meta charset="UTF-8">
@@ -66,6 +66,19 @@
             height: 400px;
             overflow-y: scroll;
             padding: 10px;
+        }
+
+        #cancel-loading-btn {
+            margin: 10px auto;
+            min-width: 400px;
+            line-height: 1.5;
+            display: flex;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: grey;
+
         }
 
         .mt-4, .my-4 {
@@ -103,17 +116,41 @@
         }
 
         .sent {
-            background-color: #d5e7fc;font-family: "Font Awesome 5 Free";font-weight: 900;
+            background-color: #d5e7fc;
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
         }
 
 
         .sent p {
-            background-color: #d5e7fc;font-family: "Font Awesome 5 Free";font-weight: 900;margin-top: 0.5rem; margin-bottom: 0.5rem;
+            background-color: #d5e7fc;
+            font-family: "Font Awesome 5 Free";
+            font-weight: 900;
+            margin-top: 0.5rem;
+            margin-bottom: 0.5rem;
         }
 
         .received {
             background-color: #fff;
         }
+
+.loading-icon {
+  display: none;
+  position: relative;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.loading-icon::after {
+  content: "...";
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 0;
+  height: 100%;
+  text-indent: -9999px;
+  animation: ellipsis 1.5s infinite;
+}
 
         .btn {
             padding: 10px;
@@ -164,6 +201,7 @@
                 {% endif %}
             {% endfor %}
         </div>
+<div class="loading-icon" id="my-loading-icon"></div>
     </div>
     <div class="chat-form-container">
         <form id="chat-form" class="chat-form">
@@ -175,74 +213,105 @@
             </div>
         </form>
     </div>
+    <div>
+        <button id="cancel-loading-btn" class="btn relative btn-neutral border-0 md:border"
+                style="min-width: 400px; line-height: 1.5; display: none; text-align: center;">Cancel Loading
+        </button>
+    </div>
     <div class="text-center mt-4">
         <button id="clear-chat-btn" class="btn btn-danger" style="min-width: 400px; line-height: 1.5">Clear chat
         </button>
     </div>
+
 </div>
 <script>
     $(document).ready(function () {
 
-        $('#chat-input').focus();
+    $('#chat-input').focus();
 
-        // 添加一个scrollToBottom函数，用于滚动到底部
-        function scrollToBottom() {
-            $('.chat-window').scrollTop($('.chat-window')[0].scrollHeight);
-        }
+    // 添加一个scrollToBottom函数，用于滚动到底部
+    function scrollToBottom() {
+        $('.chat-window').scrollTop($('.chat-window')[0].scrollHeight);
+    }
 
-        scrollToBottom();
+    scrollToBottom();
 
-        $('#clear-chat-btn').click(function (event) {
-            event.preventDefault();
-            $.ajax({
-                url: '',
-                method: 'DELETE',
-                success: function (response) {
-                    window.location.reload();
-                }
-            });
-        });
-
-        $(document).ready(function () {
-            $('#chat-input').on('keydown', function (e) {
-                if (e.keyCode == 13 && !e.shiftKey) { // 如果按下的是回车键，且没有按下 shift 键
-                    e.preventDefault(); // 阻止回车键的默认行为
-                    $('#chat-form').submit(); // 提交表单
-                }
-            });
-
-            $('#chat-form').submit(function (event) {
-                event.preventDefault();
-                let prompt = $('#chat-input').val();
-                prompt = prompt.replace(/\n/g, '<br>');
-                $('#chat-input').attr('disabled', true);
-                $('#chat-form button[type="submit"]').attr('disabled', true);
-                $('#chat-form button[type="submit"]').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...');
-                $('#message-container').append('<div class="chat-message loading"><p><i class="fa fa-spinner fa-spin"></i></p></div>');
-                $.ajax({
-                    url: '',
-                    method: 'POST',
-                    data: {'prompt': prompt},
-                    success: function (response) {
-                        var content = response.content;
-                        $('#message-container .chat-message.loading').remove();
-                        $('#message-container').append('<div class="chat-message sent"><p>' + prompt + '</p></div>');
-                        scrollToBottom();
-                        $('#message-container').append('<div class="chat-message received"><p>' + content.replace(/\n/g, '<br>') + '</p></div>');
-                        scrollToBottom();
-
-                        $('#chat-input').val('');
-                        $('#chat-input').attr('disabled', false);
-                        $('#chat-form button[type="submit"]').attr('disabled', false);
-                        $('#chat-form button[type="submit"]').html('Send');
-
-                        // 将焦点设置回 chat-input 输入框
-                        $('#chat-input').focus();
-                    }
-                });
-            });
+    $('#clear-chat-btn').click(function (event) {
+        event.preventDefault();
+        $.ajax({
+            url: '',
+            method: 'DELETE',
+            success: function (response) {
+                window.location.reload();
+            }
         });
     });
+    var cancelLoading = false;
+    $('#chat-form').submit(function (event) {
+        event.preventDefault();
+        let prompt = $('#chat-input').val();
+        prompt = prompt.replace(/\n/g, '<br>');
+
+
+
+        cancelLoading = false; // 新增一个变量，记录取消加载的状态
+        $('#message-container').append('<div class="chat-message sent"><p>' + prompt + '</p></div>');
+        scrollToBottom();
+
+        $('#chat-input').attr('disabled', true);
+        $('#chat-form button[type="submit"]').attr('disabled', true);
+        $('#chat-form button[type="submit"]').html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...<span class="sr-only">Loading...</span>');
+        $('#cancel-loading-btn').show();
+
+        $('#my-loading-icon').show();
+        scrollToBottom();
+        $('#message-container').append('<div class="chat-message loading"><p><i class="fa fa-spinner fa-spin"></i></p></div>');
+        $.ajax({
+            url: '',
+            method: 'POST',
+            data: {'prompt': prompt},
+            success: function (response) {
+                if (!cancelLoading) { // 如果没有取消加载，则向chat-message添加数据
+                    var content = response.content;
+                    $('#message-container .chat-message.loading').remove();
+                    $('#cancel-loading-btn').hide();
+
+
+                    $('#message-container').append('<div class="chat-message received"><p>' + content.replace(/\n/g, '<br>') + '</p></div>');
+                    scrollToBottom();
+
+                    $('#chat-input').val('');
+                    $('#chat-input').attr('disabled', false);
+                    $('#chat-form button[type="submit"]').attr('disabled', false);
+                    $('#chat-form button[type="submit"]').html('Send');
+
+                    // 将焦点设置回 chat-input 输入框
+                    $('#chat-input').focus();
+                }
+            }
+        });
+    });
+
+    $('#chat-input').on('keydown', function (e) {
+        if (e.keyCode == 13 && !e.shiftKey) { // 如果按下的是回车键，且没有按下 shift 键
+            e.preventDefault(); // 阻止回车键的默认行为
+            $('#chat-form').submit(); // 提交表单
+        }
+    });
+
+    $('#cancel-loading-btn').click(function (event) {
+        event.preventDefault();
+        cancelLoading = true; // 设置取消加载的状态为 true
+        $('#chat-input').attr('disabled', false);
+        $('#chat-form button[type="submit"]').attr('disabled', false);
+        $('#chat-form button[type="submit"]').html('Send');
+        $(this).hide();
+        $('#my-loading-icon').hide();
+        $('#message-container .chat-message.loading').remove();
+    });
+
+});
+
 
 
 </script>
