@@ -35,6 +35,8 @@
 
 <head>
     <title>Chat</title>
+    <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         .container {
@@ -133,14 +135,30 @@
         .btn-danger:hover {
             background-color: #c82333;
         }
+        .chat-window-title {
+            font-size: 24px; /* 设置字体大小 */
+  color: darkgrey; /* 设置字体颜色 */
+  background-color: #f5f5f5; /* 设置背景颜色 */
+  padding: 10px; /* 设置内边距 */
+  border-bottom: 1px solid #ccc; /* 设置底部边框 */
+        }
     </style>
     <head>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     </head>
 <body>
 <div class="container">
+    <div class="chat-window-title">Chat with ChatGPT</div>
     <div class="chat-window">
-        <div id="message-container"></div>
+        <div id="message-container">
+            {% for content in conversation %}
+                {% if content.role == 'user' %}
+                    <div class="chat-message sent"><p>{{ content.content }}</p></div>
+                {% elif content.role == 'assistant' %}
+                    <div class="chat-message received"><p>{{ content.content }}</p></div>
+                {% endif %}
+            {% endfor %}
+        </div>
     </div>
     <div class="chat-form-container">
         <form id="chat-form" class="chat-form">

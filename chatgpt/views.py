@@ -49,7 +49,8 @@ def chat(request):
         request.method = 'GET'
         return chat(request)
     else:
-        return render(request, 'chatgpt/index.html')
+        return render(request, 'chatgpt/index.html',
+                      {'conversation': request.session.get('chatbot_conversation', {}).get('default', [])})
 
 
 def register_request(request):
