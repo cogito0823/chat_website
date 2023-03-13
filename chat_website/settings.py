@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'crispy_bootstrap4'
 ]
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
